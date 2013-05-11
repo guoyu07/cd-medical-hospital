@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta name="keywords" content="百度地图,百度地图API，百度地图自定义工具，百度地图所见即所得工具" />
+<meta name="description" content="百度地图API自定义地图，帮助用户在可视化操作下生成百度地图" />
+<title>百度地图API自定义地图</title>
+<!--引用百度地图API-->
+<style type="text/css">
+body, html,#dituContent {width: 100%;height: 100%;overflow: hidden;margin:0;}
+#l-map{height:100%;width:78%;float:left;border-right:2px solid #bcbcbc;}
+#r-result{height:100%;width:20%;float:left;}
+</style>
+<style type="text/css">
+    html,body{margin:0;padding:0;}
+    .iw_poi_title {color:#CC5522;font-size:14px;font-weight:bold;overflow:hidden;padding-right:13px;white-space:nowrap}
+    .iw_poi_content {font:12px arial,sans-serif;overflow:visible;padding-top:4px;white-space:-moz-pre-wrap;word-wrap:break-word}
+</style>
+
+
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.5&ak=BFc4e09952f556a0a825a7861e171b11"></script>
+</head>
+
+<body>
+  <!--百度地图容器-->
+  <div id="dituContent"></div>
+</body>
+<script type="text/javascript">
+    //创建和初始化地图函数：
+    function initMap(){
+        createMap();//创建地图
+        setMapEvent();//设置地图事件
+        addMapControl();//向地图添加控件
+        addMarker();//向地图中添加marker
+        addPolyline();//向地图中添加线
+        addRemark();//向地图中添加文字标注
+    }
+    
+    //创建地图函数：
+    function createMap(){
+        var map = new BMap.Map("dituContent");//在百度地图容器中创建一个地图
+        var point = new BMap.Point(104.041333,30.678079);//定义一个中心点坐标
+        map.centerAndZoom(point,13);//设定地图的中心点和坐标并将地图显示在地图容器中
+        window.map = map;//将map变量存储在全局
+    }
+    
+    //地图事件设置函数：
+    function setMapEvent(){
+        map.enableDragging();//启用地图拖拽事件，默认启用(可不写)
+        map.enableScrollWheelZoom();//启用地图滚轮放大缩小
+        map.enableDoubleClickZoom();//启用鼠标双击放大，默认启用(可不写)
+        map.enableKeyboard();//启用键盘上下左右键移动地图
+    }
+    
+    //地图控件添加函数：
+    function addMapControl(){
+        //向地图中添加缩放控件
+	var ctrl_nav = new BMap.NavigationControl({anchor:BMAP_ANCHOR_TOP_LEFT,type:BMAP_NAVIGATION_CONTROL_LARGE});
+	map.addControl(ctrl_nav);
+        //向地图中添加缩略图控件
+	var ctrl_ove = new BMap.OverviewMapControl({anchor:BMAP_ANCHOR_BOTTOM_RIGHT,isOpen:1});
+	map.addControl(ctrl_ove);
+        //向地图中添加比例尺控件
+	var ctrl_sca = new BMap.ScaleControl({anchor:BMAP_ANCHOR_BOTTOM_LEFT});
+	map.addControl(ctrl_sca);
+    }
+    
+    //标注点数组
+    var markerArr = [{title:"武警四川省总队成都医院",content:"成都市石人南路21号",point:"104.03402|30.677974",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+		 ,{title:"四川省妇幼保健医院",content:"我的备注",point:"104.002341|30.656995",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+		 ,{title:"成都骨科医院",content:"成都市锦江区均隆街66－68号",point:"104.095866|30.656576",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+		 ,{title:"成都市骨科医院",content:"成都市锦江区均隆街66－68号",point:"104.09580767481|30.656415633544",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"武警四川省总队成都医院",content:"成都市石人南路21号",point:"104.03398673876|30.67788185292",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省人民医院",content:"成都市一环路西二段32号",point:"104.04688946013|30.6698627928",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第十人民医院",content:"成都市锦江区静居寺路18号",point:"104.11142300932|30.629110738954",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第二人民医院",content:"成都市庆云南街10号",point:"104.0933230516|30.665415873233",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第七人民医院",content:"成都市致民路十二中街1号",point:"104.08642280765|30.647908234895",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"中国人民解放军第452医院",content:"成都市九眼桥工农院街1号",point:"104.10149358936|30.638340294617",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省第五人民医院",content:"成都市青羊区商业街69号",point:"104.06322748142|30.670996544055",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都军区装备部机关医院",content:"成都市同心路99号",point:"104.06211376225|30.682574170477",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"武警四川省消防总队医院",content:"成都市青羊区石人南路21号",point:"104.03398673876|30.67788185292",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市中医药大学附属医院",content:"成都市十二桥路39号",point:"104.048378671|30.672136571749",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省妇幼保健医院",content:"待详",point:"|",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都军区八一骨科医院",content:"成都市青羊区武都路3号",point:"104.07586394503|30.684853159818",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市青羊区妇幼保健院",content:"成都市青羊区正通顺街53号",point:"104.08663220267|30.676493338712",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省第二中医医院",content:"成都市青羊区四道街20号",point:"104.06055475304|30.678195007376",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都军区联勤部机关医院",content:"成都市青羊区通惠门路16号",point:"104.05558667441|30.667926221392",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都飞机工业（集团）有限责任公司医院",content:"成都市青羊区黄田坝",point:"103.97361746442|30.698950287043",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第九人民医院",content:"成都市包家巷77号",point:"104.05995666123|30.663718714443",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市妇幼保健院",content:"成都市实业街32号",point:"104.0588448285|30.673251193686",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第八人民医院",content:"成都市草市街165号",point:"104.08298095009|30.678224824161",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都军区机关医院",content:"成都市青羊区人民中路三段20号",point:"104.07672497086|30.68183677939",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市金牛区第二人民医院",content:"成都市金牛区石灰街85号",point:"104.05688751062|30.683272734002",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都铁路局成都铁路中心医院",content:"成都市二环路北二段82号",point:"104.07445153928|30.700441257005",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"中国第五冶金建设公司医院",content:"成都市一环路北三段53号",point:"104.08262638891|30.691050071411",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都军区总医院",content:"成都市天回镇",point:"104.12340353024|30.767010839597",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都医学院附属第一医院",content:"成都市新都区宝光大道278号",point:"104.16465959262|30.831011804092",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省建筑医院",content:"成都市金牛区星辉东路5号",point:"104.09569754255|30.677312535027",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"核工业四一六医院",content:"成都市二环路北四段4号",point:"104.09931933071|30.695683129213",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市西区医院",content:"成都市金牛区蜀汉路1号",point:"104.03641539754|30.688878993099",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都铁路分局医院",content:"成都市荷花池路二段32号",point:"103.98112038154|30.594466476858",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"中铁二局集团中心医院",content:"成都市沙湾东一路85号",point:"104.05968815771|30.694638872794",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市金牛区人民医院",content:"成都市金牛区茶店子健康巷3号",point:"104.03518489865|30.701534123365",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市金牛区中医医院",content:"成都市金牛区天回镇上街128号",point:"|",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市公安局安康医院",content:"成都市金牛区马家花园路筒车巷19号",point:"104.05944390844|30.686193182049",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省林业中心医院",content:"成都市金牛区白马寺街10号",point:"104.07307183184|30.689011756062",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市金牛区妇幼保健院",content:"成都市火车北站西一路108号",point:"104.07607881971|30.701999973452",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"西藏自治区人民政府驻成都办事处医院",content:"成都市洗面桥横街20号",point:"104.05837016387|30.647826678763",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川大学华西医院",content:"成都市武侯区国学巷37号",point:"104.06793190738|30.649387185036",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省交通厅公路局成都医院",content:"郫县犀浦镇犀团路500号",point:"|",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省肿瘤医院",content:"成都市人民南路四段55号",point:"104.07409212724|30.616132903489",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省第四人民医院",content:"成都市城守东大街57号",point:"104.08252074818|30.659060032014",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都体育学院附属体育医院",content:"成都市武候祠大街251号",point:"104.05321272244|30.649719462167",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"三六三医院",content:"成都市倒桑树街108号",point:"104.06158412132|30.654953102013",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省红十字肿瘤医院",content:"成都市燃灯寺9号",point:"104.0679234633|30.67994284542",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市武侯区人民医院",content:"成都市武侯区广福桥街16号",point:"104.04285067855|30.64289077234",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"中国人民武装警察部队四川省总队成都医院",content:"成都市浆洗街5号",point:"104.06244128444|30.649219259595",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省中西医结合医院",content:"成都市人民南路四段51号",point:"104.07405969841|30.619493293505",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市新华人民医院",content:"成都市双桥路180号",point:"|",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"攀钢集团成都医院",content:"成都市成华区双华南路12号",point:"104.10829052818|30.655233711596",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第六人民医院",content:"成都市成华区建设南街16号",point:"104.11461702439|30.671644018708",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省司法警官总医院",content:"成都市外南机场路近都段16号",point:"104.00456301128|30.583124584864",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市航天医院",content:"龙泉驿区龙泉镇鲸龙路121号",point:"104.26935922137|30.55371757617",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市龙泉驿区第一人民医院",content:"成都市龙泉驿区龙泉镇鸥鹏大道417号",point:"104.28390009266|30.558369639904",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市龙泉驿区中医医院",content:"龙泉驿区龙泉镇建设路68号",point:"104.279385299|30.567302827243",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市青白江区人民医院",content:"青白江区青江南路87号",point:"104.26287058101|30.882747714056",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市青白江区中医医院",content:"青白江区城厢镇大东街1号",point:"104.32764666359|30.861494096355",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市新都区人民医院",content:"成都市新都区新都镇上南街101号",point:"104.16977720474|30.831084393047",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第三人民医院",content:"成都市青龙街82号",point:"104.06975780316|30.676065334965",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市老年病医院",content:"成都市温江区万春东路56号",point:"103.84808681517|30.709475465917",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市温江区人民医院",content:"成都市温江区柳城镇万春东路10号",point:"103.84838190853|30.706723243661",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市第五人民医院",content:"成都市温江区柳城镇麻市街33号",point:"103.8358753399|30.703442456347",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"成都市温江区中医医院",content:"成都市温江区柳城镇东大街156号",point:"103.84911339871|30.705156220677",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省监狱管理局中心医院",content:"金堂县清江镇",point:"104.39429680933|30.917282894549",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"金堂县中医医院",content:"金堂县赵镇桔园路149号",point:"104.44453679073|30.864376515227",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"金堂县第一人民医院",content:"金堂县赵镇郊山路69号",point:"104.43772323327|30.862824406695",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"金堂县第二人民医院",content:"金堂县淮口镇淮白路275号",point:"104.56447054751|30.715827257341",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"四川省石油管理局总医院",content:"双流县华阳镇通济巷26号",point:"104.05527271664|30.511516693731",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"双流县第二人民医院",content:"双流县华阳镇正北街97号",point:"104.06345193802|30.514040179329",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"双流县第一人民医院",content:"双流县东升镇西北街149号",point:"103.93055323726|30.582667949502",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"郫县第二人民医院",content:"郫县唐昌镇北街124号",point:"103.83041867291|30.923962056923",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"郫县中医医院",content:"郫县郫筒镇南大街342号",point:"103.8874296321|30.811657431301",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+,{title:"郫县人民医院",content:"郫县郫筒镇东大街125号",point:"103.89534514093|30.813009707177",isOpen:0,icon:{w:23,h:25,l:46,t:21,x:9,lb:12}}
+		 ];
+    //创建marker
+    function addMarker(){
+        for(var i=0;i<markerArr.length;i++){
+            var json = markerArr[i];
+            var p0 = json.point.split("|")[0];
+            var p1 = json.point.split("|")[1];
+            var point = new BMap.Point(p0,p1);
+			var iconImg = createIcon(json.icon);
+            var marker = new BMap.Marker(point,{icon:iconImg});
+			var iw = createInfoWindow(i);
+			var label = new BMap.Label(json.title,{"offset":new BMap.Size(json.icon.lb-json.icon.x+10,-20)});
+			marker.setLabel(label);
+            map.addOverlay(marker);
+            label.setStyle({
+                        borderColor:"#808080",
+                        color:"#333",
+                        cursor:"pointer"
+            });
+			
+			(function(){
+				var index = i;
+				var _iw = createInfoWindow(i);
+				var _marker = marker;
+				_marker.addEventListener("click",function(){
+				    this.openInfoWindow(_iw);
+			    });
+			    _iw.addEventListener("open",function(){
+				    _marker.getLabel().hide();
+			    })
+			    _iw.addEventListener("close",function(){
+				    _marker.getLabel().show();
+			    })
+				label.addEventListener("click",function(){
+				    _marker.openInfoWindow(_iw);
+			    })
+				if(!!json.isOpen){
+					label.hide();
+					_marker.openInfoWindow(_iw);
+				}
+			})()
+        }
+    }
+    //创建InfoWindow
+    function createInfoWindow(i){
+        var json = markerArr[i];
+        var iw = new BMap.InfoWindow("<b class='iw_poi_title' title='" + json.title + "'>" + json.title + "</b><div class='iw_poi_content'>"+json.content+"</div>");
+        return iw;
+    }
+    //创建一个Icon
+    function createIcon(json){
+        var icon = new BMap.Icon("http://app.baidu.com/map/images/us_mk_icon.png", new BMap.Size(json.w,json.h),{imageOffset: new BMap.Size(-json.l,-json.t),infoWindowOffset:new BMap.Size(json.lb+5,1),offset:new BMap.Size(json.x,json.h)})
+        return icon;
+    }
+//标注线数组
+    var plPoints = [{style:"solid",weight:4,color:"#f00",opacity:0.6,points:["116.333842|39.914935","116.322343|39.927773"]}
+		 ];
+    //向地图中添加线函数
+    function addPolyline(){
+		for(var i=0;i<plPoints.length;i++){
+			var json = plPoints[i];
+			var points = [];
+			for(var j=0;j<json.points.length;j++){
+				var p1 = json.points[j].split("|")[0];
+				var p2 = json.points[j].split("|")[1];
+				points.push(new BMap.Point(p1,p2));
+			}
+			var line = new BMap.Polyline(points,{strokeStyle:json.style,strokeWeight:json.weight,strokeColor:json.color,strokeOpacity:json.opacity});
+			map.addOverlay(line);
+		}
+	}
+//文字标注数组
+    var lbPoints = [{point:"116.336141|39.908294",content:"我的标记"}
+		 ];
+    //向地图中添加文字标注函数
+    function addRemark(){
+        for(var i=0;i<lbPoints.length;i++){
+            var json = lbPoints[i];
+            var p1 = json.point.split("|")[0];
+            var p2 = json.point.split("|")[1];
+            var label = new BMap.Label("<div style='padding:2px;'>"+json.content+"</div>",{point:new BMap.Point(p1,p2),offset:new BMap.Size(3,-6)});
+            map.addOverlay(label);
+            label.setStyle({borderColor:"#999"});
+        }
+    }
+    
+    initMap();//创建和初始化地图
+</script>
+</html>
